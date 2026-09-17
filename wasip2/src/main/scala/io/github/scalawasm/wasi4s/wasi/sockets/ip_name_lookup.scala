@@ -1,0 +1,71 @@
+package io.github.scalawasm.wasi4s.wasi.sockets
+
+package object ip_name_lookup {
+
+  // Type definitions
+  type Pollable = io.github.scalawasm.wasi4s.wasi.io.poll.Pollable
+
+  type Network = io.github.scalawasm.wasi4s.wasi.sockets.network.Network
+
+  type ErrorCode = io.github.scalawasm.wasi4s.wasi.sockets.network.ErrorCode
+
+  type IpAddress = io.github.scalawasm.wasi4s.wasi.sockets.network.IpAddress
+
+  // Resources
+  @scala.scalajs.wit.annotation.WitResourceImport(scala.scalajs.wit.annotation.WitScope("wasi", "sockets", "ip-name-lookup", "0.2.12"), "resolve-address-stream")
+  final class ResolveAddressStream private () extends Object {
+    /** Returns the next address from the resolver.
+     *
+     *  This function should be called multiple times. On each call, it will
+     *  return the next address in connection order preference. If all
+     *  addresses have been exhausted, this function returns `none`.
+     *
+     *  This function never returns IPv4-mapped IPv6 addresses.
+     *
+     *  # Typical errors
+     *  - `name-unresolvable`:          Name does not exist or has no suitable associated IP addresses. (EAI_NONAME, EAI_NODATA, EAI_ADDRFAMILY)
+     *  - `temporary-resolver-failure`: A temporary failure in name resolution occurred. (EAI_AGAIN)
+     *  - `permanent-resolver-failure`: A permanent failure in name resolution occurred. (EAI_FAIL)
+     *  - `would-block`:                A result is not available yet. (EWOULDBLOCK, EAGAIN)
+     */
+    @scala.scalajs.wit.annotation.WitResourceMethod("resolve-next-address")
+    def resolveNextAddress(): scala.scalajs.wit.Result[scala.scalajs.wit.Option[IpAddress], ErrorCode] = scala.scalajs.wit.native
+    /** Create a `pollable` which will resolve once the stream is ready for I/O.
+     *
+     *  Note: this function is here for WASI 0.2 only.
+     *  It's planned to be removed when `future` is natively supported in Preview3.
+     */
+    @scala.scalajs.wit.annotation.WitResourceMethod("subscribe")
+    def subscribe(): Pollable = scala.scalajs.wit.native
+    @scala.scalajs.wit.annotation.WitResourceDrop
+    def close(): Unit = scala.scalajs.wit.native
+  }
+  object ResolveAddressStream {
+  }
+
+  // Functions
+  /** Resolve an internet host name to a list of IP addresses.
+   *
+   *  Unicode domain names are automatically converted to ASCII using IDNA encoding.
+   *  If the input is an IP address string, the address is parsed and returned
+   *  as-is without making any external requests.
+   *
+   *  See the wasi-socket proposal README.md for a comparison with getaddrinfo.
+   *
+   *  This function never blocks. It either immediately fails or immediately
+   *  returns successfully with a `resolve-address-stream` that can be used
+   *  to (asynchronously) fetch the results.
+   *
+   *  # Typical errors
+   *  - `invalid-argument`: `name` is a syntactically invalid domain name or IP address.
+   *
+   *  # References:
+   *  - <https://pubs.opengroup.org/onlinepubs/9699919799/functions/getaddrinfo.html>
+   *  - <https://man7.org/linux/man-pages/man3/getaddrinfo.3.html>
+   *  - <https://learn.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfo>
+   *  - <https://man.freebsd.org/cgi/man.cgi?query=getaddrinfo&sektion=3>
+   */
+  @scala.scalajs.wit.annotation.WitImport(scala.scalajs.wit.annotation.WitScope("wasi", "sockets", "ip-name-lookup", "0.2.12"), "resolve-addresses")
+  def resolveAddresses(@scala.scalajs.wit.annotation.WitName("network") network: scala.scalajs.wit.Borrow[Network], @scala.scalajs.wit.annotation.WitName("name") name: String): scala.scalajs.wit.Result[ResolveAddressStream, ErrorCode] = scala.scalajs.wit.native
+
+}

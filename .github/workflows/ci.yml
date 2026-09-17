@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: sbt/setup-sbt@v1
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: wasmtime,wac-cli,wasm-tools
+
+      - name: Install wit-bindgen-scala
+        run: cargo install wit-bindgen-scala --version 0.1.0 --locked
+
+      - name: Check generated bindings are up to date
+        run: ./scripts/regenerate.sh --check
+
+      - name: Compile
+        run: sbt "+wasip2/compile"
+
+      - name: Run WASI smoke tests
+        run: sbt "+tests/testFull"
