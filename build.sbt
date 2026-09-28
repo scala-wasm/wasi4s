@@ -9,7 +9,6 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 
 val Scala212 = "2.12.21"
 val Scala213 = "2.13.18"
-val Scala3 = "3.9.0"
 
 val publishSettings = Seq(
   organization := "io.github.scala-wasm",
@@ -62,6 +61,7 @@ lazy val root = project
   .in(file("."))
   .aggregate(wasip2, tests)
   .settings(
+    crossScalaVersions := Nil,
     publish / skip := true
   )
 
@@ -73,7 +73,7 @@ lazy val wasip2 = project
     name := "wasi4s",
     moduleName := "wasi4s",
     scalaVersion := Scala213,
-    crossScalaVersions := Seq(Scala212, Scala213, Scala3),
+    crossScalaVersions := Seq(Scala212, Scala213),
     scalacOptions ++= Seq("-deprecation", "-feature"),
     scalaJSUseMainModuleInitializer := false,
   )
