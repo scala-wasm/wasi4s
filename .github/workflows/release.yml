@@ -1,15 +1,17 @@
-name: CI
+name: Release
 
 on:
   push:
     branches: [main]
-  pull_request:
+    tags: ["v*"]
 
 jobs:
-  test:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-java@v6
         with:
@@ -34,3 +36,11 @@ jobs:
 
       - name: Run WASI smoke tests
         run: sbt "+tests/testFull"
+
+      - name: Publish
+        run: sbt "+ciRelease"
+        env:
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
