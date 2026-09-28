@@ -8,8 +8,6 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    env:
-      SBT_OPTS: -Dsbt.server.autostart=false
     steps:
       - uses: actions/checkout@v7
         with:
@@ -40,7 +38,9 @@ jobs:
         run: sbt "+tests/testFull"
 
       - name: Publish
-        run: sbt ci-release
+        run: |
+          sbt shutdown || true
+          sbt ci-release
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
