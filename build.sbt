@@ -12,7 +12,6 @@ val Scala213 = "2.13.18"
 
 val publishSettings = Seq(
   organization := "io.github.scala-wasm",
-  version := "0.1.0+wasi-0.2.12",
   versionScheme := Some("semver-spec"),
   homepage := Some(url("https://github.com/scala-wasm/wasi4s")),
   licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0")),
