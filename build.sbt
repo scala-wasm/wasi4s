@@ -6,11 +6,32 @@ import org.scalajs.linker.interface.WasmComponentModuleInitializerExport
 import org.scalajs.linker.interface.WasmComponentModuleInitializerExport._
 import org.scalajs.sbtplugin.ScalaJSPlugin
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
+import sbtdynver.DynVerPlugin.autoImport._
+
+import scala.sys.process.Process
+import scala.util.Try
 
 val Scala212 = "2.12.21"
 val Scala213 = "2.13.18"
 
+def gitReleaseVersion: Option[String] =
+  Try(Process("git describe --exact-match --tags HEAD").!!.trim)
+    .toOption
+    .map(_.stripPrefix("v"))
+
+def gitSnapshotVersion: String = {
+  val sha = Try(Process("git rev-parse --short=8 HEAD").!!.trim).getOrElse("unknown")
+  val tag = Try(Process("git describe --tags --abbrev=0").!!.trim)
+    .toOption
+    .map(_.stripPrefix("v"))
+    .getOrElse("0.0.0")
+  s"$tag-$sha-SNAPSHOT"
+}
+
 val publishSettings = Seq(
+  // ThisBuild scope: ci-release pulls in DynVer, but +wasi tags break dynver's git describe parser.
+  ThisBuild / dynverGitDescribeOutput := None,
+  ThisBuild / version := gitReleaseVersion.getOrElse(gitSnapshotVersion),
   organization := "io.github.scala-wasm",
   versionScheme := Some("semver-spec"),
   homepage := Some(url("https://github.com/scala-wasm/wasi4s")),
