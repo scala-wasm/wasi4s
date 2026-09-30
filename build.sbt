@@ -19,19 +19,11 @@ def gitReleaseVersion: Option[String] =
     .toOption
     .map(_.stripPrefix("v"))
 
-def gitSnapshotVersion: String = {
-  val sha = Try(Process("git rev-parse --short=8 HEAD").!!.trim).getOrElse("unknown")
-  val tag = Try(Process("git describe --tags --abbrev=0").!!.trim)
-    .toOption
-    .map(_.stripPrefix("v"))
-    .getOrElse("0.0.0")
-  s"$tag-$sha-SNAPSHOT"
-}
-
 val publishSettings = Seq(
   // ThisBuild scope: ci-release pulls in DynVer, but +wasi tags break dynver's git describe parser.
   ThisBuild / dynverGitDescribeOutput := None,
-  ThisBuild / version := gitReleaseVersion.getOrElse(gitSnapshotVersion),
+  ThisBuild / version := gitReleaseVersion.getOrElse("0.0.0-SNAPSHOT"),
+  ThisBuild / isSnapshot := version.value.endsWith("-SNAPSHOT"),
   organization := "io.github.scala-wasm",
   versionScheme := Some("semver-spec"),
   homepage := Some(url("https://github.com/scala-wasm/wasi4s")),
