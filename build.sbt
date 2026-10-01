@@ -47,9 +47,7 @@ val publishSettings = Seq(
 lazy val componentTestSettings = Def.settings(
   Test / scalaJSUseTestModuleInitializer := true,
   scalaJSUseMainModuleInitializer := false,
-  jsEnv := Def.uncached {
-    new WasmtimeEnv()
-  },
+  jsEnv := new WasmtimeEnv(),
   Test / scalaJSLinkerConfig := {
     val witDir = baseDirectory.value / "wit"
     (Test / scalaJSLinkerConfig).value
