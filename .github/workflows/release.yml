@@ -36,7 +36,7 @@ jobs:
         run: sbt "+wasip2/compile"
 
       - name: Run WASI smoke tests
-        run: sbt "+tests/testFull"
+        run: sbt "+tests/test"
 
       - name: Publish
         run: sbt ci-release
